@@ -18,7 +18,15 @@ A weather-driven early warning model for **soybean rust** (*Phakopsora pachyrhiz
 | Outbreak (logistic regression) | Alarms that were real (precision) | **54%** |
 | Outbreak (logistic regression) | AUC | **0.65** |
 
-All results come from **year-by-year validation**: for each test year, the model is trained only on earlier years and then predicts that year (2019–2024), mirroring how a warning system would be used.
+These results come from **year-by-year validation**: for each test year, the model is trained only on earlier years and then predicts that year (2019–2024), mirroring how a warning system would be used.
+
+**The model also works at locations it has never seen.** Holding out whole 50 km areas, it still caught 26 of 34 outbreaks (AUC 0.65), which supports mapping rust risk beyond the trial sites:
+
+| Validation | Held out each round | Spearman | Outbreaks caught | Precision | AUC |
+|---|---|---|---|---|---|
+| Year-by-year | One future year | 0.47 | 15 of 26 | 0.54 | 0.65 |
+| Leave-location-out | One of 38 locations | 0.45 | 25 of 34 | 0.62 | 0.66 |
+| Leave-block-out | All locations within a 50 km cluster (17 clusters) | 0.36 | 26 of 34 | 0.63 | 0.65 |
 
 **Weather signal.** Rust was more severe after humid, wet and cool windows, and less severe after hot, dry ones:
 
@@ -42,6 +50,8 @@ flowchart LR
     F --> G[16 features<br/>14 days before R4]
     G --> H[Severity model<br/>random forest]
     G --> I[Outbreak model<br/>logistic regression]
+    H --> K[Validation<br/>by year and by location]
+    I --> K
     I --> J[Alert levels<br/>Green to Red]
 ```
 
@@ -66,6 +76,8 @@ Full details: [docs/methods.md](docs/methods.md).
 | p90 severity (most susceptible genotypes) instead of mean | Weaker than the mean | [exp2](notebooks/experiments/exp2_model_improvements.ipynb) |
 | Genotype-level model with genotype susceptibility | No improvement at trial level | [exp2](notebooks/experiments/exp2_model_improvements.ipynb) |
 | Weather window before R6 instead of R4 | Similar accuracy; R4 caught more outbreaks and warns ~17 days earlier | [results](results/experiments/exp3_R4_vs_R6_window.csv) |
+| Spore-source proxies from earlier trials (same location, within 25 km, same country, Malawi vs Zambia) | No consistent improvement; trial history too sparse (half of locations used once) | [results](results/experiments/exp4_spore_source_proxies.csv) |
+| Spatial validation (leave-location-out, 50 km blocks) | Outbreak detection holds at unseen locations | [results](results/experiments/exp5_spatial_validation.csv) |
 
 ![Experiments](figures/05_improvement_experiments.png)
 
@@ -78,7 +90,7 @@ notebooks/
     exp1_weather_source_comparison.ipynb    ERA5 vs ERA5-Land vs IFS vs CHIRPS
     exp2_model_improvements.ipynb           CHIRPS, trial exclusion, p90, genotype level, outbreak model
 results/
-  main_v4/                                  trial features, predictions and alerts from the main pipeline
+  main/                                     trial features, predictions and alerts from the main pipeline
   experiments/                              result tables of the experiments, all weather features
 figures/                                    figures used in this README
 docs/
@@ -100,15 +112,17 @@ Weather is downloaded automatically from the Open-Meteo API (no account needed).
 
 - About 80 usable trials, most with little rust; differences of a few percent can be chance.
 - Leaf wetness is estimated from humidity, and R4/R6 dates are estimated rather than observed.
-- Weather alone does not explain rust in several Zambian trials with ideal conditions but no recorded rust, which suggests a role for spore availability.
+- Weather alone does not explain rust in several Zambian trials with ideal conditions but no recorded rust, which suggests a role for spore availability; proxies built from trial history were too sparse to capture it.
 - The exclusion of unassessed trials is pending confirmation from the trial pathologists.
 
 ## Next steps
 
-1. Add a spore-source feature (rust recorded nearby in the previous season).
-2. Validate on unseen locations (leave-location-out).
-3. Produce rust-risk maps for Malawi and Zambia on a 9 km grid.
-4. Add a forecast layer driven by ECMWF weather forecasts.
+- [x] Clean, reproducible pipeline with data-quality checks
+- [x] Weather source, target and time-window comparisons
+- [x] Validation at unseen locations
+- [ ] Spore pressure from rust surveillance data (spore proxies from trial history did not help)
+- [ ] Rust-risk maps for Malawi and Zambia on a 9 km grid, with sowing dates from season onset
+- [ ] Forecast layer driven by ECMWF weather forecasts
 
 ## Data sources and acknowledgements
 

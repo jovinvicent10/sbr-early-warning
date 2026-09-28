@@ -1,0 +1,16 @@
+features,validation,trials,gain_vs_baseline_%,spearman,outbreaks_caught,precision,AUC
+Weather only,year-by-year,63,9.2,0.47,15 of 26,0.54,0.65
+Weather only,leave-location-out,78,23.1,0.45,25 of 34,0.62,0.66
+Weather only,leave-block-out (50 km),78,16.4,0.36,26 of 34,0.63,0.65
++ location history,year-by-year,63,10.3,0.44,15 of 26,0.5,0.64
++ location history,leave-location-out,78,23.5,0.44,24 of 34,0.6,0.68
++ location history,leave-block-out (50 km),78,17.3,0.36,24 of 34,0.62,0.66
++ nearby history (25 km),year-by-year,63,8.5,0.45,15 of 26,0.54,0.65
++ nearby history (25 km),leave-location-out,78,22.6,0.45,24 of 34,0.63,0.66
++ nearby history (25 km),leave-block-out (50 km),78,17.0,0.36,25 of 34,0.62,0.64
++ country history,year-by-year,63,8.4,0.43,12 of 26,0.41,0.48
++ country history,leave-location-out,78,21.8,0.43,24 of 34,0.6,0.65
++ country history,leave-block-out (50 km),78,17.2,0.36,25 of 34,0.61,0.64
++ Malawi/Zambia,year-by-year,63,8.8,0.45,13 of 26,0.57,0.68
++ Malawi/Zambia,leave-location-out,78,23.1,0.45,26 of 34,0.63,0.74
++ Malawi/Zambia,leave-block-out (50 km),78,17.2,0.37,24 of 34,0.6,0.71
