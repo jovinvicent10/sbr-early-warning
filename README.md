@@ -12,29 +12,37 @@ A weather-driven early warning model for **soybean rust** (*Phakopsora pachyrhiz
 
 | Model | Measure | Result |
 |---|---|---|
-| Severity (random forest) | Error reduction vs no-weather baseline, on trials with rust | **9.2%** |
-| Severity (random forest) | Spearman correlation, predicted vs observed | **0.47** |
-| Outbreak (logistic regression) | Outbreaks caught (recall) | **15 of 26 (58%)** |
-| Outbreak (logistic regression) | Alarms that were real (precision) | **54%** |
-| Outbreak (logistic regression) | AUC | **0.65** |
+| Severity (random forest) | Error reduction vs no-weather baseline, on trials with rust | **10.3%** |
+| Severity (random forest) | Spearman correlation, predicted vs observed | **0.46** |
+| Outbreak (logistic regression) | Outbreaks caught (recall) | **17 of 26 (65%)** |
+| Outbreak (logistic regression) | Alarms that were real (precision) | **57%** |
+| Outbreak (logistic regression) | AUC | **0.70** |
 
 These results come from **year-by-year validation**: for each test year, the model is trained only on earlier years and then predicts that year (2019–2024), mirroring how a warning system would be used.
 
-**The model also works at locations it has never seen.** Holding out whole 50 km areas, it still caught 26 of 34 outbreaks (AUC 0.65), which supports mapping rust risk beyond the trial sites:
+**The model also works at locations it has never seen.** Holding out whole 50 km areas, it still caught 26 of 34 outbreaks (AUC 0.67), which supports mapping rust risk beyond the trial sites:
 
 | Validation | Held out each round | Spearman | Outbreaks caught | Precision | AUC |
 |---|---|---|---|---|---|
-| Year-by-year | One future year | 0.47 | 15 of 26 | 0.54 | 0.65 |
-| Leave-location-out | One of 38 locations | 0.45 | 25 of 34 | 0.62 | 0.66 |
-| Leave-block-out | All locations within a 50 km cluster (17 clusters) | 0.36 | 26 of 34 | 0.63 | 0.65 |
+| Year-by-year | One future year | 0.46 | 17 of 26 | 0.57 | 0.70 |
+| Leave-location-out | One of 38 locations | 0.48 | 25 of 34 | 0.62 | 0.69 |
+| Leave-block-out | All locations within a 50 km cluster (17 clusters) | 0.42 | 26 of 34 | 0.65 | 0.67 |
 
 **Weather signal.** Rust was more severe after humid, wet and cool windows, and less severe after hot, dry ones:
 
 ![Weather correlations](figures/02_weather_correlations_R4.png)
 
-**Alerts.** Converting the outbreak probability into four alert levels gives correctly ordered risk: 20% of Green trials, 40% of Yellow and 54% of Orange trials had real outbreaks.
+**Alerts.** Converting the outbreak probability into four alert levels gives correctly ordered risk: 19% of Green trials, 35% of Yellow and 57% of Orange trials had real outbreaks.
 
 ![Alert levels](figures/07_alert_levels.png)
+
+## First rust-risk map (2020/21)
+
+Outbreak probability, alert level and predicted severity across Malawi and Zambia (0.2° grid, 1,752 land cells), from a model that **never saw the 2020/21 season**. Six of the season's seven outbreak trials (triangles) fall in Orange cells; the seventh, with the mildest rust, falls in Yellow. Risk is highest in northern Zambia and central-northern Malawi, following leaf wetness and humidity.
+
+![Rust-risk map 2020/21](figures/08_rust_risk_map_2020.png)
+
+Sowing dates for grid cells come from a tested rule: the later of 21 December or 7 days after season onset (CHIRPS). On 60 rainfed trials it predicted sowing within 8.2 days on average, matching the best alternative ([results](results/sowing/p2_onset_evaluation.csv)). Map probabilities are relative (class balancing raises them), so the map is best read as a ranking of risk.
 
 ---
 
@@ -53,6 +61,7 @@ flowchart LR
     H --> K[Validation<br/>by year and by location]
     I --> K
     I --> J[Alert levels<br/>Green to Red]
+    I --> M[Rust-risk maps<br/>Malawi and Zambia]
 ```
 
 ## Methods in brief
@@ -62,7 +71,7 @@ flowchart LR
 - **Quality control.** Trials where every genotype scored 0 and no other disease was recorded were treated as probably not assessed and excluded (21 trials). Date errors were corrected automatically and listed (see [docs/data_issues.md](docs/data_issues.md)).
 - **Growth stages.** R4 and R6 were placed between each trial's own flowering (R1) and maturity (R8) dates using the relative positions of the Manitoba Soybean Plant Development Guide: R4 = R1 + 0.33 × (R8 − R1). Estimated maturity came a median of 26 days before the recorded harvest, supporting these estimates.
 - **Weather.** Hourly ECMWF IFS (9 km) data from the Open-Meteo Historical Weather API, at each trial's coordinates.
-- **Features.** 16 epidemiological variables over the 14 days before R4, including leaf-wetness hours (RH ≥ 90%), infection-favourable days (≥ 6 wet hours at 17–29 °C), minimum and maximum temperature, rainfall, vapour pressure deficit, solar radiation, wind and soil moisture.
+- **Features.** 14 epidemiological variables over the 14 days before R4, including leaf-wetness hours (RH ≥ 90%), infection-favourable days (≥ 6 wet hours at 17–29 °C), minimum and maximum temperature, rainfall, vapour pressure deficit, solar radiation, wind speed and soil moisture. Wind direction is computed but not used (see experiments).
 
 Full details: [docs/methods.md](docs/methods.md).
 
@@ -78,6 +87,8 @@ Full details: [docs/methods.md](docs/methods.md).
 | Weather window before R6 instead of R4 | Similar accuracy; R4 caught more outbreaks and warns ~17 days earlier | [results](results/experiments/exp3_R4_vs_R6_window.csv) |
 | Spore-source proxies from earlier trials (same location, within 25 km, same country, Malawi vs Zambia) | No consistent improvement; trial history too sparse (half of locations used once) | [results](results/experiments/exp4_spore_source_proxies.csv) |
 | Spatial validation (leave-location-out, 50 km blocks) | Outbreak detection holds at unseen locations | [results](results/experiments/exp5_spatial_validation.csv) |
+| Dropping wind direction (16 → 14 features) | Better everywhere: year-by-year AUC 0.65 → 0.70; far less extrapolation on the map | [results](results/experiments/exp6_wind_direction.csv) |
+| Sowing date from season onset (three CHIRPS rules) vs fixed date | Onset alone did not beat 21 December (8.4 days' error); the later of the two is used for maps | [notebook](notebooks/02_sowing_date_onset_check.ipynb) |
 
 ![Experiments](figures/05_improvement_experiments.png)
 
@@ -86,12 +97,16 @@ Full details: [docs/methods.md](docs/methods.md).
 ```
 notebooks/
   01_main_pipeline.ipynb                    main pipeline (run end to end in Google Colab)
+  02_sowing_date_onset_check.ipynb          season onset vs recorded sowing dates
+  03_rust_risk_map.ipynb                    rust-risk map for one season (GeoTIFF, PNG, CSV)
   experiments/
     exp1_weather_source_comparison.ipynb    ERA5 vs ERA5-Land vs IFS vs CHIRPS
     exp2_model_improvements.ipynb           CHIRPS, trial exclusion, p90, genotype level, outbreak model
 results/
   main/                                     trial features, predictions and alerts from the main pipeline
   experiments/                              result tables of the experiments, all weather features
+  sowing/                                   onset-rule evaluation
+  maps/                                     2020/21 map as GeoTIFF (QGIS/ArcGIS) and CSV
 figures/                                    figures used in this README
 docs/
   methods.md                                detailed methods
@@ -121,7 +136,10 @@ Weather is downloaded automatically from the Open-Meteo API (no account needed).
 - [x] Weather source, target and time-window comparisons
 - [x] Validation at unseen locations
 - [ ] Spore pressure from rust surveillance data (spore proxies from trial history did not help)
-- [ ] Rust-risk maps for Malawi and Zambia on a 9 km grid, with sowing dates from season onset
+- [x] Sowing dates for grid cells, tested against trial sowing dates
+- [x] First rust-risk map (2020/21), checked against that season's trials
+- [ ] Map of a contrasting low-rust season (2023/24) to test false alarms
+- [ ] Cropland mask, calibrated probabilities, finer grid
 - [ ] Forecast layer driven by ECMWF weather forecasts
 
 ## Data sources and acknowledgements

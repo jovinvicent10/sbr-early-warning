@@ -1,4 +1,4 @@
 validation,trials,gain_vs_baseline_%,spearman,outbreaks_caught,precision,AUC
-year-by-year,63,9.2,0.47,15 of 26,0.54,0.65
-leave-location-out,78,23.1,0.45,25 of 34,0.62,0.66
-leave-block-out (50 km),78,16.4,0.36,26 of 34,0.63,0.65
+year-by-year,63,10.3,0.46,17 of 26,0.57,0.7
+leave-location-out,78,23.4,0.48,25 of 34,0.62,0.69
+leave-block-out (50 km),78,18.2,0.42,26 of 34,0.65,0.67

@@ -1,0 +1,5 @@
+method,trials,MAE_days,within_10d,within_14d,spearman,median_gap_days
+Fixed typical date,60,8.4,70%,82%,-0.25,
+"Onset A: 25 mm in 3 days, no 10-day dry spell in next 30",60,14.9,47%,62%,-0.13,20.0
+"Onset B: 20 mm in 3 days, no 7-day dry spell in next 30",60,15.7,50%,62%,0.04,20.0
+Onset C: 25 mm in 3 days (no false-start check),60,12.9,43%,65%,-0.04,23.0

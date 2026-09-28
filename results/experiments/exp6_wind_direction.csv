@@ -1,0 +1,5 @@
+features,validation,trials,gain_vs_baseline_pct,spearman,outbreaks_caught,precision,AUC
+16 (with wind direction),year-by-year,63,9.2,0.47,15 of 26,0.54,0.65
+14 (no wind direction),year-by-year,63,10.3,0.46,17 of 26,0.57,0.70
+16 (with wind direction),leave-block-out 50 km,78,16.4,0.36,26 of 34,0.63,0.65
+14 (no wind direction),leave-block-out 50 km,78,18.2,0.42,26 of 34,0.65,0.67

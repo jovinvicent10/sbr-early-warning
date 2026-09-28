@@ -45,6 +45,8 @@ Hourly ECMWF IFS (9 km) data were retrieved from the Open-Meteo Historical Weath
 
 ## 7. Features (14 days before R4)
 
+16 features are computed; the models use 14. Wind direction (`wind_sin`, `wind_cos`) is excluded because it pushed many map cells outside the trials' range and removing it improved validation.
+
 | Feature | Definition |
 |---|---|
 | `wet_hours` | Hours with RH ≥ 90% (leaf-wetness proxy) |
@@ -69,3 +71,11 @@ Hourly ECMWF IFS (9 km) data were retrieved from the Open-Meteo Historical Weath
 ## 9. Alerts
 
 Outbreak probability is mapped to four levels: Green (< 0.25), Yellow (0.25–0.50), Orange (0.50–0.75) and Red (≥ 0.75). Thresholds are placeholders to be agreed with plant pathologists.
+
+## 10. Rust-risk maps
+
+- **Grid:** 0.2° cells inside Malawi and Zambia (Natural Earth boundaries), excluding lakes (Natural Earth 10 m lakes).
+- **Sowing date per cell:** the later of 21 December or 7 days after onset, where onset is the first day from 1 November with ≥ 25 mm of CHIRPS rainfall over 3 days. Tested on 60 rainfed and supplementary rainy-season trials: 8.2 days' average error, against 8.4 for a fixed date and 12.9–15.7 for onset-based rules alone.
+- **R4 per cell:** sowing + 69 days (trial median). Weather: hourly ECMWF IFS for the 14 days before R4, 14 features as for the trials.
+- **Models:** trained on all trials except the mapped season, so the map can be checked against that season's trials.
+- **Extrapolation:** cells with any feature outside the training range are flagged (hatched).
