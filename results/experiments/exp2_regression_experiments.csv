@@ -1,0 +1,22 @@
+experiment,model,n,MAE,MAE_rust,gain_vs_baseline_%,spearman
+"E1 IFS, mean, all",Baseline,81.0,0.543,1.242,0.0,-0.109
+"E1 IFS, mean, all",Random forest,81.0,0.457,1.164,6.279,0.233
+"E1 IFS, mean, all",Ridge,81.0,0.497,1.227,1.181,0.221
+"E2 IFS+CHIRPS, mean, all",Baseline,81.0,0.543,1.242,0.0,-0.109
+"E2 IFS+CHIRPS, mean, all",Random forest,81.0,0.457,1.164,6.296,0.236
+"E2 IFS+CHIRPS, mean, all",Ridge,81.0,0.496,1.226,1.28,0.221
+"E3 IFS+CHIRPS, mean, assessed only",Baseline,63.0,0.635,1.16,0.0,-0.111
+"E3 IFS+CHIRPS, mean, assessed only",Random forest,63.0,0.467,1.057,8.909,0.47
+"E3 IFS+CHIRPS, mean, assessed only",Ridge,63.0,0.549,1.129,2.726,0.367
+"E4 IFS+CHIRPS, p90, all",Baseline,81.0,1.0,1.596,0.0,-0.025
+"E4 IFS+CHIRPS, p90, all",Random forest,81.0,0.887,1.552,2.737,0.192
+"E4 IFS+CHIRPS, p90, all",Ridge,81.0,0.936,1.593,0.201,0.21
+"E5 IFS+CHIRPS, p90, assessed only",Baseline,63.0,1.132,1.433,0.0,-0.24
+"E5 IFS+CHIRPS, p90, assessed only",Random forest,63.0,0.902,1.372,4.243,0.405
+"E5 IFS+CHIRPS, p90, assessed only",Ridge,63.0,1.007,1.418,1.038,0.298
+E6 genotype level (records),Baseline,2293.0,0.721,1.549,0.0,-0.092
+E6 genotype level (records),Random forest,2293.0,0.564,1.55,-0.071,0.28
+E6 genotype level (records),Ridge,2293.0,0.96,1.59,-2.656,-0.2
+E6 genotype level -> trial mean,Baseline,63.0,0.627,1.188,0.0,-0.111
+E6 genotype level -> trial mean,Random forest,63.0,0.494,1.184,0.318,0.345
+E6 genotype level -> trial mean,Ridge,63.0,0.876,1.312,-10.427,-0.287

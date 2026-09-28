@@ -1,0 +1,3 @@
+window,trials,error_reduction_vs_baseline_pct,spearman,outbreaks_caught,outbreaks_total,precision,AUC
+14 days before R4,78,9.3,0.47,16,26,0.55,0.65
+14 days before R6,78,10.2,0.45,13,26,0.59,0.66
